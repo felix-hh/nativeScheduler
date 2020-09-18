@@ -21,6 +21,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "Trying out React Native",
+    "githubUrl": "https://github.com/felix-hh/nativeScheduler"
   }
 }
