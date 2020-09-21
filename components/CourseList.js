@@ -3,13 +3,9 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } fr
 import Course from "./Course"
 import TermSelector from "./TermSelector"
 import CourseSelector from "./CourseSelector"
+import { getCourseNumber, getCourseTerm, hasConflict, terms } from "../utils/course"
 
 const termMap = { F: 'Fall', W: 'Winter', S: 'Spring'};
-const terms = Object.values(termMap);
-
-const getCourseTerm = course => (
-  termMap[course.id.charAt(0)]
-);
 
 const CourseList = ({courses}) => {
   const [selectedTerm, setSelectedTerm] = useState('Fall');

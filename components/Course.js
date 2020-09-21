@@ -1,18 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { getCourseNumber, getCourseTerm, hasConflict, terms } from "../utils/course"
 
-const getCourseNumber = course => (
-  course.id.slice(1)
-)
-
-const Course = ({course, isSelected, select}) => (
-    <TouchableOpacity style={styles[isSelected ? 'courseButtonSelected' : 'courseButton']}
-        onPress={() => { select(course);}}>
-      <Text style={styles.courseText}>
-        {`CS ${getCourseNumber(course)}\n${course.meets}`}
-      </Text>
-    </TouchableOpacity>
-  );
+const Course = ({course, isDisabled, isSelected, select}) => (
+  <TouchableOpacity style={styles[isSelected ? 'courseButtonSelected' : isDisabled ? 'courseButtonDisabled' : 'courseButton']}
+      onPress={() => { if (!isDisabled) select(course); }}>
+    <Text style={styles.courseText}>
+      {`CS ${getCourseNumber(course)}\n${course.meets}`}
+    </Text>
+  </TouchableOpacity>
+);
 
 const courseButtonBase = {
     borderRadius: 5,
@@ -32,6 +29,10 @@ const styles = StyleSheet.create({
   courseButtonSelected: {
     ...courseButtonBase,
     backgroundColor: '#004a99',
+  },
+  courseButtonDisabled:{
+    ...courseButtonBase,
+    backgroundColor: '#d3d3d3',
   },
   courseText:{
     color: '#fff',
