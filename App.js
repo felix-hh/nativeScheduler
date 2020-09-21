@@ -4,18 +4,6 @@ import CourseList from "./components/CourseList"
   
 const schedule = {};
 
-// const getCourseNumber = course => (
-//   course.id.slice(1)
-// );
-
-// const Course = ({ course }) => (
-//   <TouchableOpacity style={styles.courseButton}>
-//     <Text style={styles.courseText}>
-//       {`CS ${getCourseNumber(course)}\n${course.meets}`}
-//     </Text>
-//   </TouchableOpacity>
-// );
-
 const Banner = ({ title }) => (
   <Text style={styles.banner}>{ title }</Text>
 );
