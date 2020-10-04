@@ -18,27 +18,44 @@ const Banner = ({ title }) => (
 );
 
 const ScheduleScreen = ({navigation}) => {
-    const user = useContext(UserContext);
-    const canEdit = user && user.role === 'admin';
+  const user = useContext(UserContext);
+  const canEdit = user && user.role === 'admin';
+
   const [schedule, setSchedule] = useState({ title: '', courses: [] });
+
+  useEffect(() => {
+    const db = firebase.database().ref();
+    const handleData = snap => {
+      if (snap.val()) setSchedule(fixCourses(snap.val()));
+    }
+    db.on('value', handleData, error => alert(error));
+    return () => { db.off('value', handleData); };
+  }, []);
+
   const view = (course) => {
-    navigation.navigate(canEdit? 'CourseEditScreen' : "CourseDetailScreen", { course });
+    navigation.navigate(canEdit ? 'CourseEditScreen' : 'CourseDetailScreen', { course });
   };
+
   const url = 'https://courses.cs.northwestern.edu/394/data/cs-courses.php';
 
   useEffect(() => {
-    db.on('value', snap => {
-      if (snap.val()) setSchedule(fixCourses(snap.val()))    ;
-    }, error => console.log(error));
+    const fetchSchedule =  async () => {
+      const response = await fetch(url);
+      if (!response.ok) throw response;
+      const json = await response.json();
+      setSchedule(json);
+    }
+    fetchSchedule();
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <Banner title={schedule.title} />
-      <CourseList courses={schedule.courses} view={view}/>
+      <CourseList courses={schedule.courses} view={view} />
     </SafeAreaView>
   );
-};  
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

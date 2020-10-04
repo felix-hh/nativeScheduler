@@ -1,6 +1,7 @@
 import * as firebase from 'firebase';
 
 import "firebase/database";
+import 'firebase/auth';
 
   // Initialize Firebase
 

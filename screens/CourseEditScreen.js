@@ -1,10 +1,8 @@
-import React, {useContext, useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import * as Yup from 'yup';
-import Form from "../components/Form"
+import React, { useState} from 'react';
+import Form from '../components/Form';
+import { SafeAreaView, ScrollView, StyleSheet} from 'react-native';
 import { firebase } from '../utils/firebase';
-
-const db = firebase.database().ref("courses");
+import * as Yup from 'yup';
 
 const validationSchema = Yup.object().shape({
   id: Yup.string()
@@ -20,69 +18,45 @@ const validationSchema = Yup.object().shape({
     .label('Title'),
 });
 
-const handleSubmit= (values) => {
-  console.log(db)
-  console.log(values)
-  db.child(values.id).set({
-    id: values.id,
-    meets: values.meets,
-    title: values.title
-  })
-}
-
-const submitError = ""
-
-const Field = ({label, value}) => {
-  return (
-    <View style={styles.fieldContainer}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.field}>{value}</Text>
-    </View>
-  );
-};
-
-const CourseEditScreen = ({navigation, route}) => {
+const CourseEditScreen = ({ navigation, route }) => {
   const course = route.params.course;
-  console.log(course)
+  const termMap = { F: 'Fall', W: 'Winter', S: 'Spring'};
+  const [submitError, setSubmitError] = useState('');
+
+  const id = "EDIT " + course.id.slice(1) + ":\n" + course.title;
+  const meets = course.meets + "\n" + termMap[course.id.charAt(0)];
+
+  async function handleSubmit(values) {
+    const { id, meets, title } = values;
+    const course = { id, meets, title };
+    firebase.database().ref('courses').child(id).set(course).catch(error => {
+      setSubmitError(error.message);
+    });
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-      <Form
-          initialValues={{
-            id: course.id,
-            meets: course.meets,
-            title: course.title,
-          }}
+        <Form initialValues={{id: course.id, meets: course.meets, title: course.title}}
           validationSchema={validationSchema}
-          onSubmit={values => handleSubmit(values)}
-        >
-
+          onSubmit={values => handleSubmit(values)}>
           <Form.Field
             name="id"
             leftIcon="identifier"
             placeholder="F110"
             autoCapitalize="none"
             autoFocus={true}
-            style={{
-              width:300
-            }}
           />
           <Form.Field
             name="meets"
             leftIcon="calendar-range"
             placeholder="MThu 12:00-13:50"
             autoCapitalize="none"
-            style={{
-              width:300
-            }}
           />
           <Form.Field
             name="title"
             leftIcon="format-title"
             placeholder="Introduction to programming"
-            style={{
-              width:300
-            }}
           />
           <Form.Button title={'Update'} />
           {<Form.ErrorMessage error={submitError} visible={true} />}
@@ -97,26 +71,22 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ccccb3'
+    backgroundColor: '#fff'
   },
   field: {
-    height: 40,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
     width: 300,
-    padding: 5,
-    backgroundColor: 'white',
+    padding: 8,
+    backgroundColor: '#d3d3d3',
+    borderRadius: 5,
   },
   fieldContainer: {
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
   },
   label: {
+    marginBottom: 10,
     fontWeight: 'bold',
   }
 });
